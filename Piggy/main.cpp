@@ -54,7 +54,7 @@ namespace pork
                 // First Constructor....
                 version="0.0.1";
             }
-            // delimeter must have to be a character..
+            // delimiter must have to be a character..
             vector<string> split(string data,char delim)
             {
                 stringstream ss(data);
