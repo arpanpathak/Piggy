@@ -47,7 +47,7 @@ namespace pork
                     }
                     rows++;
                     for ( string j: i ) {
-                        out<<"\t"<<j;
+                        out<<setw(20)<<j;
                     }
                     out<<"\n";
                 }
@@ -120,7 +120,7 @@ namespace pork
                 double m=0.0;
                 try {
                     if( col>data[0].size()-1 ) throw 1;
-                    for( unsigned int i=0 ; i < data.size() ; i++ )
+                    for( unsigned int i=0 ; i < (unsigned) data.size() ; i++ )
                     {
                         if( i==0 && !ignore_header )
                             continue;   // first row is header.. ignore it
@@ -132,6 +132,13 @@ namespace pork
                 }
                 return ignore_header? (m/data.size()*1.00) :
                                       (m/ ( data.size()-1)*1.00 );
+            }
+            Frame head( int n=5 )
+            {
+                vector< vector<string> > H;
+                for( unsigned i=0; i< (ignore_header?n:n+1); i++ )
+                    H.push_back( data[i] );
+                return Frame(H);
             }
     };
     class Piggy
@@ -195,5 +202,8 @@ int main()
     cout<<"Mean CGPA="<<data.mean("cgpa")<<endl;
     cout<<"Mean CGPA="<<data.mean("cgpaa")<<endl; // Invalid Column Name
     cout<<"Mean CGPA="<<data.mean(3); // Invalid Column Index
+    cout<<"\nHead : -\n";
+    Frame h=data.head();
+    cout<<h;
     return 0;
 }
