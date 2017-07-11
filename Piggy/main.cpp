@@ -42,12 +42,12 @@ namespace pork
                 {
                     if(rows>b.default_max_row)
                     {
-                        out<<"\t...."<<b.data.size()-rows<<" more rows\n";
+                        out<<setw(20)<<left<<"...."<<b.data.size()-rows<<" more rows\n";
                         break;
                     }
                     rows++;
                     for ( string j: i ) {
-                        out<<setw(20)<<j;
+                        out<<setw(20)<<left<<j;
                     }
                     out<<"\n";
                 }
