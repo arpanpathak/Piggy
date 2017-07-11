@@ -96,7 +96,13 @@ namespace pork
             // get mean by colname
             double mean( string col )
             {
-                int idx=headers[col];
+                map<string,int>::iterator it=headers.find(col);
+                if( it==headers.end() )
+                {
+                    cout<<"ColumnNameNotFound Exception..\n";
+                    return -INFINITY;
+                }
+                int idx=it->second;
                 double m=0.0;
                 for( unsigned int i=0 ; i < data.size() ; i++ )
                 {
@@ -110,12 +116,19 @@ namespace pork
             // get mean by col index
             double mean( int col )
             {
+
                 double m=0.0;
-                for( unsigned int i=0 ; i < data.size() ; i++ )
-                {
-                    if( i==0 && !ignore_header )
-                        continue;   // first row is header.. ignore it
-                    m+=atof ( data[i][col].c_str() );
+                try {
+                    if( col>data[0].size()-1 ) throw 1;
+                    for( unsigned int i=0 ; i < data.size() ; i++ )
+                    {
+                        if( i==0 && !ignore_header )
+                            continue;   // first row is header.. ignore it
+                        m+=atof ( data[i][col].c_str() );
+                    }
+                } catch( int ex ) {
+                    cout<<"Column Index OutOfBound Exception...";
+                    return -INFINITY;
                 }
                 return ignore_header? (m/data.size()*1.00) :
                                       (m/ ( data.size()-1)*1.00 );
@@ -178,6 +191,9 @@ int main()
     cout<<col2;
     // get value of particular cell ( row,col )
     cout<<"Value at (10,1) : ";
-    cout<<data.getVal(10,1)<<endl<<"Mean CGPA="<<data.mean("cgpa");
+    cout<<data.getVal(10,1)<<endl;
+    cout<<"Mean CGPA="<<data.mean("cgpa")<<endl;
+    cout<<"Mean CGPA="<<data.mean("cgpaa")<<endl; // Invalid Column Name
+    cout<<"Mean CGPA="<<data.mean(3); // Invalid Column Index
     return 0;
 }
