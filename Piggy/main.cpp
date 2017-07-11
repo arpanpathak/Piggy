@@ -45,10 +45,11 @@ namespace pork
                         out<<setw(20)<<left<<"...."<<b.data.size()-rows<<" more rows\n";
                         break;
                     }
-                    rows++;
+                    out<<setw(10)<<left<<rows;
                     for ( string j: i ) {
                         out<<setw(20)<<left<<j;
                     }
+                    rows++;
                     out<<"\n";
                 }
                 out<<"(rows="<<b.data.size()-1<<",cols="<<b.data[0].size()<<")\n]]\n";
@@ -119,7 +120,7 @@ namespace pork
 
                 double m=0.0;
                 try {
-                    if( col>data[0].size()-1 ) throw 1;
+                    if( unsigned (col) > data[0].size()-1  ) throw 1;
                     for( unsigned int i=0 ; i < (unsigned) data.size() ; i++ )
                     {
                         if( i==0 && !ignore_header )
@@ -136,7 +137,14 @@ namespace pork
             Frame head( int n=5 )
             {
                 vector< vector<string> > H;
-                for( unsigned i=0; i< (ignore_header?n:n+1); i++ )
+                for( unsigned i=0; i< unsigned(ignore_header?n:n+1); i++ )
+                    H.push_back( data[i] );
+                return Frame(H);
+            }
+            Frame tail( int n=5 )
+            {
+                vector< vector<string> > H;
+                for( unsigned i=data.size(); i> unsigned(data.size()-n); i-- )
                     H.push_back( data[i] );
                 return Frame(H);
             }
