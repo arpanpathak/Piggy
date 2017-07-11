@@ -10,7 +10,8 @@
 #include <set>
 #include <queue>
 #include <list>
-
+#include <iomanip>
+#include <string>
 using namespace std;
 namespace pork
 {
@@ -18,10 +19,20 @@ namespace pork
     {
         const int default_max_row=100;
         vector<vector<string> > data;
+        bool ignore_header;
+        map<string,int> headers;
         public:
-            Frame(vector<vector<string> > &data )
+            Frame()
+            {
+                // blank constructor....
+            }
+            Frame( vector<vector<string> > &data ,bool ignore_header=false )
             {
                 this->data=data;
+                this->ignore_header=ignore_header;
+                if(!ignore_header)
+                for( unsigned int i=0 ; i<data[0].size() ; i++ )
+                    headers[data[0][i]]=i;
             }
             friend ostream& operator << ( ostream &out , Frame &b )
             {
@@ -53,6 +64,61 @@ namespace pork
                     result.push_back(s);
                 }
                 return Frame(result);
+            }
+            // get all the value of a column by column name...
+            Frame operator [] ( string col )
+            {
+
+                return operator []( headers[col] );
+            }
+            // returns a string at particular position indexed by i,j
+            string get( int i, int j )
+            {
+                return data[i][j];
+            }
+            double getVal( int i, int j )
+            {
+                stringstream ss( data[i][j] );
+                double val;
+                ss>>val;
+                return val*1.00;
+            }
+            // returns no of rows of the data frame..
+            int nrows()
+            {
+                if(!ignore_header)  return data.size() - 1;
+                                    return data.size();
+            }
+            int ncols()
+            {
+                return data[0].size();
+            }
+            // get mean by colname
+            double mean( string col )
+            {
+                int idx=headers[col];
+                double m=0.0;
+                for( unsigned int i=0 ; i < data.size() ; i++ )
+                {
+                    if( i==0 && !ignore_header )
+                        continue;   // first row is header.. ignore it
+                    m+=atof ( data[i][idx].c_str() );
+                }
+                return ignore_header? (m/data.size()*1.00) :
+                                      (m/ ( data.size()-1)*1.00 );
+            }
+            // get mean by col index
+            double mean( int col )
+            {
+                double m=0.0;
+                for( unsigned int i=0 ; i < data.size() ; i++ )
+                {
+                    if( i==0 && !ignore_header )
+                        continue;   // first row is header.. ignore it
+                    m+=atof ( data[i][col].c_str() );
+                }
+                return ignore_header? (m/data.size()*1.00) :
+                                      (m/ ( data.size()-1)*1.00 );
             }
     };
     class Piggy
@@ -96,19 +162,22 @@ namespace pork
                 {
                     cout<<"Exception Occured!!! : "<<"CSV File Not Found...";
                 }
+                return Frame();
             }
     };
 };
-
 // testing .....
 using namespace pork;
 int main()
 {
     Piggy p;
     Frame data=p.read_csv("data.csv");
-    Frame col2=data[1];
+    Frame col2=data["cgpa"];
     cout<<data;
     cout<<"Column 1\n";
     cout<<col2;
+    // get value of particular cell ( row,col )
+    cout<<"Value at (10,1) : ";
+    cout<<data.getVal(10,1)<<endl<<"Mean CGPA="<<data.mean("cgpa");
     return 0;
 }
