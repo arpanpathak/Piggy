@@ -43,6 +43,17 @@ namespace pork
                 out<<"(rows="<<b.data.size()-1<<",cols="<<b.data[0].size()<<")\n]]\n";
                 return out;
             }
+            // get column based on integer index value....
+            Frame operator [] (int idx)
+            {
+                vector<vector<string> > result;
+                for(unsigned int i=0;i<data.size();i++)
+                {
+                    vector<string> s={ data[i][idx] };
+                    result.push_back(s);
+                }
+                return Frame(result);
+            }
     };
     class Piggy
     {
@@ -95,6 +106,9 @@ int main()
 {
     Piggy p;
     Frame data=p.read_csv("data.csv");
+    Frame col2=data[1];
     cout<<data;
+    cout<<"Column 1\n";
+    cout<<col2;
     return 0;
 }
